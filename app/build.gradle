@@ -1,0 +1,81 @@
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+    id 'kotlin-kapt'
+    id 'dagger.hilt.android.plugin'
+    //id 'com.google.gms.google-services'
+}
+
+def version = rootProject.ext
+
+android {
+    compileSdk 31
+
+    defaultConfig {
+        applicationId "com.lifewithtech.grabtube"
+        minSdk 23
+        targetSdk 31
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
+    buildFeatures {
+        dataBinding = true
+    }
+}
+
+dependencies {
+
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation "androidx.appcompat:appcompat:$version.appCompactVersion"
+    implementation "androidx.constraintlayout:constraintlayout:$version.constrainLayoutVersion"
+    implementation "com.google.android.material:material:$version.materialVersion"
+
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$version.archLifecycleVersion"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$version.archLifecycleVersion"
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.4.0-beta02'
+
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$version.coroutineVersion"
+
+    implementation "com.google.dagger:hilt-android:$version.hiltVersion"
+    kapt "com.google.dagger:hilt-compiler:$version.hiltVersion"
+
+    implementation "com.github.bumptech.glide:glide:$version.glideVersion"
+    kapt "com.github.bumptech.glide:compiler:$version.glideVersion"
+
+    implementation "com.google.code.gson:gson:$version.gsonVersion"
+
+/*    //Firebase
+    implementation platform('com.google.firebase:firebase-bom:28.0.1')
+    implementation 'com.google.firebase:firebase-analytics-ktx'
+    implementation 'com.google.firebase:firebase-firestore-ktx'
+    implementation 'com.google.firebase:firebase-messaging-ktx'
+    implementation 'com.google.firebase:firebase-auth-ktx'*/
+
+
+    //Retrofit
+    implementation "com.squareup.retrofit2:retrofit:$version.retrofitVersion"
+    implementation "com.squareup.retrofit2:converter-gson:$version.retrofitVersion"
+    implementation "com.squareup.okhttp3:logging-interceptor:$version.loggingInspectorVersion"
+
+    //testImplementation 'junit:junit:4.12'
+    //androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    //androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+}

@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.lifewithtech.grabtube.model.MediaDetail
 import com.lifewithtech.grabtube.model.UrlDetail
 import com.lifewithtech.grabtube.network.ApiResponse
 import com.lifewithtech.grabtube.repository.HomeRepository
@@ -29,8 +30,8 @@ class HomeViewModel @Inject constructor(private val homeRepository: HomeReposito
         return result
     }
 
-    fun downloadFile(url: String): MutableLiveData<ApiResponse<File>> {
-        val result = MutableLiveData<ApiResponse<File>>()
+    fun downloadFile(url: String): MutableLiveData<ApiResponse<MediaDetail>> {
+        val result = MutableLiveData<ApiResponse<MediaDetail>>()
 
         viewModelScope.launch {
             homeRepository.getDownloadFile(url).collect {

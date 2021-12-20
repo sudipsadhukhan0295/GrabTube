@@ -1,5 +1,6 @@
 package com.lifewithtech.grabtube.data
 
+import com.lifewithtech.grabtube.model.MediaDetail
 import com.lifewithtech.grabtube.model.UrlDetail
 import com.lifewithtech.grabtube.network.ApiResponse
 import com.lifewithtech.grabtube.network.ApiService
@@ -26,7 +27,21 @@ class NetworkDataSource @Inject constructor(private val apiService: ApiService) 
         }
     }
 
-    suspend fun getDownloadFile(url: String):ApiResponse<ResponseBody> {
+    suspend fun getSearchResult(value: String): ApiResponse<ArrayList<MediaDetail>> {
+        val requestBody: RequestBody = MultipartBody.Builder()
+            .setType(MultipartBody.FORM)
+            .addFormDataPart("key", value)
+            .build()
+        return try {
+            ApiResponse(apiService.getSearchResult(requestBody))
+        } catch (e: HttpException) {
+            ApiResponse(e)
+        } catch (e: Exception) {
+            ApiResponse(e)
+        }
+    }
+
+    suspend fun getDownloadFile(url: String): ApiResponse<ResponseBody> {
         return try {
             ApiResponse(apiService.downloadFile(url))
         } catch (e: HttpException) {

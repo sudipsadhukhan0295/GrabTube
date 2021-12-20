@@ -1,33 +1,26 @@
 package com.lifewithtech.grabtube.ui
 
-import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
-import android.os.StrictMode
-import android.os.StrictMode.VmPolicy
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.lifewithtech.grabtube.BaseActivity
 import com.lifewithtech.grabtube.R
 import com.lifewithtech.grabtube.databinding.ActivityHomeBinding
+import com.lifewithtech.grabtube.model.MediaDetail
 import com.lifewithtech.grabtube.model.UrlDetail
 import com.lifewithtech.grabtube.network.ApiResponse
-import com.lifewithtech.grabtube.network.NoConnectionInterceptor
+import com.lifewithtech.grabtube.utils.CustomAudioPlayer
 import com.lifewithtech.grabtube.viewmodel.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import java.io.File
-import java.net.HttpURLConnection
-import java.util.concurrent.TimeUnit
 
 
 @AndroidEntryPoint
 class HomeActivity : BaseActivity() {
+
+    private var mediaPlayer: CustomAudioPlayer? = null
 
     private val viewModel: HomeViewModel by viewModels()
 
@@ -44,98 +37,60 @@ class HomeActivity : BaseActivity() {
         }
     }
 
-    private val fileDownloadObserver = Observer<ApiResponse<File>> { response ->
+    private val fileDownloadObserver = Observer<ApiResponse<MediaDetail>> { response ->
         if (response != null) {
             if (response.responseBody != null) {
-                val intent = Intent(Intent.ACTION_VIEW)
-                intent.setDataAndType(Uri.fromFile(response.responseBody!!), "audio/mp4")
-                intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
-                startActivity(intent)
+                response.responseBody?.apply {
+                    if (downloading) {
+                        Toast.makeText(this@HomeActivity, progress, Toast.LENGTH_SHORT).show()
+                    } else {
+                        setAudioPlayer(downloadPath)
+                    }
+
+
+                }
             }
         }
     }
 
+    private fun setAudioPlayer(downloadPath: String) {
+        if (mediaPlayer != null) {
+                setDataInMediaPlayer(downloadPath)
+            } else {
+                mediaPlayer?.release()
+                mediaPlayer= CustomAudioPlayer.create()
+                setDataInMediaPlayer(downloadPath)
+            }
+    }
+
+    private fun setDataInMediaPlayer(path: String) {
+        mediaPlayer!!.setDataSource(path)
+        mediaPlayer!!.prepareAsync()
+        mediaPlayer!!.setOnPreparedListener {
+            mediaPlayer!!.start()
+        }
+    }
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val builder = VmPolicy.Builder()
-        StrictMode.setVmPolicy(builder.build())
         binding.activity = this
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
 
+        mediaPlayer = CustomAudioPlayer.create()
+
     }
 
     fun callApi(value: String?) {
+        startActivity(Intent(this,SearchActivity::class.java))
         if (value != null)
             viewModel.getResponse(value).observe(this, urlDownloadObserver)
     }
 
-    fun openFile(file: File) {
 
-        // Get URI and MIME type of file
-        /*val uri: Uri =
-            FileProvider.getUriForFile(this, "com.lifewithtech.grabtube"+ ".fileprovider", file)*/
-        //val mime = contentResolver.getType(uri)
-
-        // Open file with user selected app
-        val intent = Intent()
-        intent.action = Intent.ACTION_VIEW
-        intent.type = "video/mp4"
-        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        startActivity(intent)
-    }
-
-    fun downloadPdf(
-        context: Context,
-        url: String,
-        fileName: String,
-        update: (String) -> Unit,
-        storedFile: (File) -> Unit,
-        exception: (Exception) -> Unit
-    ) {
-        val okHttpClient = OkHttpClient.Builder()
-            .addInterceptor(NoConnectionInterceptor(context))
-            .readTimeout(60, TimeUnit.SECONDS)
-            .connectTimeout(60, TimeUnit.SECONDS)
-            .build()
-        val request = Request.Builder().url(url).build()
-
-        GlobalScope.launch {
-            try {
-                val response = okHttpClient.newCall(request).execute()
-
-                val body = response.body
-                val responseCode = response.code
-                if (responseCode >= HttpURLConnection.HTTP_OK &&
-                    responseCode < HttpURLConnection.HTTP_MULT_CHOICE &&
-                    body != null
-                ) {
-
-                    val directoryPath = context.getExternalFilesDir(null)?.absolutePath
-                    val file = File("$directoryPath/$fileName.mp4")
-
-                    val length = body.contentLength()
-                    var progress = "0"
-                    body.byteStream().apply {
-                        file.outputStream().use { fileOut ->
-                            var bytesCopied = 0
-                            val buffer = ByteArray(1024 * 8)
-                            var bytes = read(buffer)
-                            while (bytes >= 0) {
-                                fileOut.write(buffer, 0, bytes)
-                                bytesCopied += bytes
-                                bytes = read(buffer)
-                                progress = ((bytesCopied * 100) / length).toString()
-                                update(progress)
-                            }
-
-                            storedFile(file)
-                        }
-                    }
-                }
-            } catch (e: Exception) {
-                exception(e)
-            }
-        }
+    override fun onStop() {
+        super.onStop()
+        mediaPlayer?.release()
     }
 }

@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Environment
 import android.util.Log
 import com.lifewithtech.grabtube.data.NetworkDataSource
+import com.lifewithtech.grabtube.model.MediaDetail
 import com.lifewithtech.grabtube.model.UrlDetail
 import com.lifewithtech.grabtube.network.ApiResponse
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -26,7 +27,7 @@ class HomeRepository @Inject constructor(
         }.flowOn(Dispatchers.IO)
     }
 
-    suspend fun getDownloadFile(url: String): Flow<ApiResponse<File>> {
+    suspend fun getDownloadFile(url: String): Flow<ApiResponse<MediaDetail>> {
         return flow {
             var directory = Environment.DIRECTORY_DOWNLOADS
 
@@ -37,9 +38,8 @@ class HomeRepository @Inject constructor(
 
                 val file = File(directoryPath, "file.mp3")
 
+                val media = MediaDetail()
                 try {
-                    Log.e("MEDIA TYPE", response.contentType()?.subtype!!)
-                    Log.e("MEDIA TYPE", response.contentType().toString())
                     response.apply {
                         byteStream().use { inputStream ->
                             file.outputStream().use { outputStream ->
@@ -57,6 +57,9 @@ class HomeRepository @Inject constructor(
                                     outputStream.channel
                                     outputStream.write(data, 0, bytes)
                                     progressBytes += bytes
+                                    media.downloading = true
+                                    media.progress = ((progressBytes * 100) / totalBytes).toString()
+                                    emit(ApiResponse(media))
 
                                     //emit(Download.Progress(percent = ((progressBytes * 100) / totalBytes).toInt()))
                                 }
@@ -72,7 +75,9 @@ class HomeRepository @Inject constructor(
                             }
                         }
                     }
-                    emit(ApiResponse(file))
+                    media.downloading = false
+                    media.downloadPath = file.path
+                    emit(ApiResponse(media))
                     //emit(Download.Finished(file))
                 } finally {
                     // check if download was successful
@@ -91,5 +96,10 @@ class HomeRepository @Inject constructor(
             .distinctUntilChanged()
     }
 
-
+    suspend fun getSearchList(value: String): Flow<ApiResponse<ArrayList<MediaDetail>>> {
+        return flow {
+            val result = dataSource.getSearchResult(value)
+            emit(result)
+        }.flowOn(Dispatchers.IO)
+    }
 }

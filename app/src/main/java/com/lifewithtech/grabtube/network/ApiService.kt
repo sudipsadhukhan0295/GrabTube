@@ -1,5 +1,6 @@
 package com.lifewithtech.grabtube.network
 
+import com.lifewithtech.grabtube.model.MediaDetail
 import com.lifewithtech.grabtube.model.UrlDetail
 import okhttp3.OkHttpClient
 import okhttp3.RequestBody
@@ -15,12 +16,15 @@ interface ApiService {
     @POST("api/download")
     suspend fun getResponse(@Body body: RequestBody): UrlDetail
 
+    @POST("api/search")
+    suspend fun getSearchResult(@Body body: RequestBody): ArrayList<MediaDetail>
+
     @Streaming
     @GET
     suspend fun downloadFile(@Url url: String): ResponseBody
 
     companion object {
-        private const val BASE_URL = "http://dccc-223-191-16-178.ngrok.io/"
+        private const val BASE_URL = "http://0e07-117-227-100-239.ngrok.io/"
 
         fun create(): ApiService {
             val inspector = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)

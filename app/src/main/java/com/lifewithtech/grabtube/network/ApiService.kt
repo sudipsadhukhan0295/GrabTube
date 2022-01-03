@@ -24,7 +24,7 @@ interface ApiService {
     suspend fun downloadFile(@Url url: String): ResponseBody
 
     companion object {
-        private const val BASE_URL = "http://0e07-117-227-100-239.ngrok.io/"
+        private const val BASE_URL = "http://61a3-2409-4060-209b-b6bf-4ded-5ae-ea5e-4e2a.ngrok.io/"
 
         fun create(): ApiService {
             val inspector = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)

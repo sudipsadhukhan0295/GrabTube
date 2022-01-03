@@ -16,9 +16,6 @@
         android:theme="@style/Theme.GrabTube"
         android:usesCleartextTraffic="true" >
         <activity
-            android:name=".ui.SearchActivity"
-            android:exported="false" />
-        <activity
             android:name=".ui.HomeActivity"
             android:exported="true" >
             <intent-filter>

@@ -17,15 +17,4 @@ class SearchViewModel @Inject constructor(private val homeRepository: HomeReposi
 
 
 
-    fun getSearchResponse(value: String): MutableLiveData<ApiResponse<ArrayList<MediaDetail>>> {
-        val result = MutableLiveData<ApiResponse<ArrayList<MediaDetail>>>()
-
-        viewModelScope.launch {
-            homeRepository.getSearchList(value).collect {
-                result.value = it
-            }
-        }
-        return result
-    }
-
 }

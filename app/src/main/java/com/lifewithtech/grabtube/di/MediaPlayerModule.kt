@@ -1,19 +1,18 @@
 package com.lifewithtech.grabtube.di
 
-import com.lifewithtech.grabtube.network.ApiService
+import com.lifewithtech.grabtube.utils.CustomAudioPlayer
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import javax.inject.Named
 import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
 @Module
-class NetworkModule {
+class MediaPlayerModule {
     @Singleton
     @Provides
-    fun provideApiService(): ApiService {
-        return ApiService.create()
+    fun provideCustomAudioPlayer(): CustomAudioPlayer {
+        return CustomAudioPlayer.create()
     }
 }

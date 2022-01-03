@@ -7,6 +7,7 @@ import com.lifewithtech.grabtube.data.NetworkDataSource
 import com.lifewithtech.grabtube.model.MediaDetail
 import com.lifewithtech.grabtube.model.UrlDetail
 import com.lifewithtech.grabtube.network.ApiResponse
+import com.lifewithtech.grabtube.network.ApiResult
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -20,7 +21,7 @@ class HomeRepository @Inject constructor(
     private val dataSource: NetworkDataSource,
     @ApplicationContext private val appContext: Context
 ) {
-    suspend fun getResponse(url: String): Flow<ApiResponse<UrlDetail>> {
+    suspend fun getResponse(url: String): Flow<ApiResult<UrlDetail>> {
         return flow {
             val result = dataSource.getDownloadUrl(url)
             emit(result)

@@ -3,6 +3,19 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="fragment"
+            type="com.lifewithtech.grabtube.ui.SearchFragment" />
+
+        <variable
+            name="viewmodel"
+            type="com.lifewithtech.grabtube.viewmodel.HomeViewModel" />
+    </data>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -13,8 +26,16 @@
             android:id="@+id/et_search"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="8dp"
+            android:layout_marginTop="8dp"
             android:background="@android:color/white"
+            android:drawableEnd="@drawable/ic_search"
+            android:elevation="4dp"
+            android:imeOptions="actionSearch"
+            android:inputType="text"
+            android:maxLines="1"
             android:padding="8dp"
+            android:text="@={viewmodel.searchValue}"
             app:layout_constraintEnd_toStartOf="@+id/abtn_search"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -23,17 +44,19 @@
             android:id="@+id/abtn_search"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:src="@android:drawable/ic_menu_search"
+            android:onClick="@{()->fragment.searchByValue()}"
+            android:src="@drawable/ic_search"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@+id/et_search"
             app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/et_search"
-            app:tint="@android:color/holo_red_light" />
+            app:layout_constraintTop_toTopOf="@+id/et_search" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_search_list"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:layout_marginTop="8dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"

@@ -50,8 +50,9 @@ dependencies {
 
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$version.archLifecycleVersion"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$version.archLifecycleVersion"
-    implementation 'androidx.navigation:navigation-fragment-ktx:2.4.0-beta02'
 
+    implementation 'androidx.activity:activity-ktx:1.4.0'
+    implementation "androidx.fragment:fragment-ktx:$version.fragmentVersion"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$version.coroutineVersion"
 
     implementation "com.google.dagger:hilt-android:$version.hiltVersion"

@@ -2,10 +2,9 @@ package com.lifewithtech.grabtube.repository
 
 import android.content.Context
 import android.os.Environment
-import android.util.Log
 import com.lifewithtech.grabtube.data.NetworkDataSource
 import com.lifewithtech.grabtube.model.MediaDetail
-import com.lifewithtech.grabtube.model.UrlDetail
+import com.lifewithtech.grabtube.model.MediaDetailResponse
 import com.lifewithtech.grabtube.network.ApiResponse
 import com.lifewithtech.grabtube.network.ApiResult
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -21,8 +20,9 @@ class HomeRepository @Inject constructor(
     private val dataSource: NetworkDataSource,
     @ApplicationContext private val appContext: Context
 ) {
-    suspend fun getResponse(url: String): Flow<ApiResult<UrlDetail>> {
+    suspend fun getResponse(url: String): Flow<ApiResult<MediaDetailResponse>> {
         return flow {
+            emit(ApiResult.InProgress)
             val result = dataSource.getDownloadUrl(url)
             emit(result)
         }.flowOn(Dispatchers.IO)
@@ -76,6 +76,7 @@ class HomeRepository @Inject constructor(
                             }
                         }
                     }
+
                     media.downloading = false
                     media.downloadPath = file.path
                     emit(ApiResponse(media))

@@ -10,7 +10,7 @@ import com.lifewithtech.grabtube.R
 import com.lifewithtech.grabtube.databinding.ViewSearchItemBinding
 import com.lifewithtech.grabtube.model.MediaDetail
 
-class SearchAdapter :
+class SearchAdapter(private var onDownloadClick: (MediaDetail) -> Unit) :
     ListAdapter<MediaDetail, SearchAdapter.ViewHolder>(MediaDiffCallback()) {
 
 
@@ -29,8 +29,13 @@ class SearchAdapter :
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        holder.binding.adapter = this
         holder.binding.mediaDetail = getItem(position)
 
+    }
+
+    fun downloadFile(mediaDetail: MediaDetail){
+        onDownloadClick(mediaDetail)
     }
 }
 
